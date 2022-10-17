@@ -12,7 +12,8 @@
     "audit": "npm audit fix --force",
     "e2e": "ng e2e",
     "prepare": "husky install",
-    "format:check": "prettier --config ./.prettierrc --list-different \"src/{app,environments,assets}/**/*{.ts,.js,.json,.css,.scss}\""
+    "format:check": "prettier --config ./.prettierrc --list-different \"src/{app,environments,assets}/**/*{.ts,.js,.json,.css,.scss}\"",
+    "release": "standard-version"
   },
   "private": true,
   "dependencies": {
@@ -55,10 +56,14 @@
     "karma": "~6.1.0",
     "karma-chrome-launcher": "~3.1.0",
     "karma-coverage": "~2.0.3",
+    "karma-coverage-istanbul-reporter": "^3.0.3",
     "karma-jasmine": "~4.0.0",
     "karma-jasmine-html-reporter": "^1.5.0",
+    "karma-sonarqube-reporter": "^1.4.0",
     "prettier-eslint": "^15.0.1",
     "protractor": "~7.0.0",
+    "sonarqube-scanner": "^2.8.2",
+    "standard-version": "^9.5.0",
     "ts-node": "~8.3.0",
     "tslint": "~6.1.0",
     "typescript": "~4.1.5"
