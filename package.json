@@ -9,7 +9,7 @@
     "lint": "ng lint --fix",
     "format:fix": "pretty-quick --staged",
     "precommit": "run-s format:fix lint",
-    "audit": "npm audit fix --force",
+    "audit": "npm audit",
     "e2e": "ng e2e",
     "prepare": "husky install",
     "format:check": "prettier --config ./.prettierrc --list-different \"src/{app,environments,assets}/**/*{.ts,.js,.json,.css,.scss}\"",
