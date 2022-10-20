@@ -1,18 +1,7 @@
-name: Dependabot PR Check
-on:
-  push
-
-jobs:
-  check-dependabot:
-    runs-on: ubuntu-latest
-    if: ${{ github.actor == 'dependabot[bot]' }}
-    steps:
-      - run: echo "PR created by Dependabot"
-
 name: Deploy to S3
 on:
   workflow_run:
-    workflows: ["Dependabot PR Check"]
+    workflows: ['Dependabot PR Check']
     types:
       - completed
 
