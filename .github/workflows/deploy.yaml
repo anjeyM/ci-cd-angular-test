@@ -10,7 +10,7 @@ permissions: read-all|write-all
 jobs:
   deploy:
     runs-on: ubuntu-latest
-    if: ${{ github.actor == 'dependabot[bot]' }}
+    if: ${{ github.event.workflow_run.conclusion == 'success' }}
     steps:
       - name: Check out Git repository
         uses: actions/checkout@v2
