@@ -1,5 +1,7 @@
 name: Dependabot PR Check
 on: push
+      branches:
+          - main
 
 jobs:
   check-dependabot:
