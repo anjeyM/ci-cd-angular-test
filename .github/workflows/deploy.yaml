@@ -1,9 +1,22 @@
-name: Deploy to S3
-
+name: Dependabot PR Check
 on:
-  push:
-    branches:
-      - main
+  push
+
+jobs:
+  check-dependabot:
+    runs-on: ubuntu-latest
+    if: ${{ github.actor == 'dependabot[bot]' }}
+    steps:
+      - run: echo "PR created by Dependabot"
+
+name: Deploy to S3
+on:
+  workflow_run:
+    workflows: ["Dependabot PR Check"]
+    types:
+      - completed
+
+permissions: read-all|write-all
 
 jobs:
   deploy:
@@ -46,6 +59,6 @@ jobs:
         env:
           AWS_ACCESS_KEY_ID: ${{ secrets.AWS_ACCESS_KEY_ID }}
           AWS_SECRET_ACCESS_KEY: ${{ secrets.AWS_SECRET_ACCESS_KEY }}
-          AWS_S3_BUCKET: s3://angular-test-ci-cd-app
-          AWS_REGION: eu-north-1
-          SOURCE_DIR: 'dist/ci-cd-angular-app'
+          AWS_S3_BUCKET: ${{ secrets.AWS_S3_BUCKET }}
+          AWS_REGION: ${{ secrets.AWS_REGION }}
+          SOURCE_DIR: 'dist/ci-cd-angular-app/'
