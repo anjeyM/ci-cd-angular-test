@@ -1,0 +1,14 @@
+name: Push Check
+on: push
+
+jobs:
+  lint:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Run lint
+        run: yarn lint
+      - name: Run Fix
+        run: format:fix
+      - name: Run tests
+        run: |
+          yarn test -- --no-watch --no-progress --browsers=ChromeHeadlessCI
