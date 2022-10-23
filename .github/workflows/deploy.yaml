@@ -1,29 +1,47 @@
 name: S3 Deploy
-on: [push]
+on:
+  push:
+    branches:
+      - main
 jobs:
-  run:
+  build:
     runs-on: ubuntu-latest
-    env:
-      AWS_ACCESS_KEY_ID: ${{ secrets.AWS_ACCESS_KEY_ID }}
-      AWS_SECRET_ACCESS_KEY: ${{ secrets.AWS_SECRET_ACCESS_KEY }}
-      SOURCE_DIR: 'dist/ci-cd-angular-app/'
+    timeout-minutes: 10
     steps:
-      - uses: actions/checkout@v3
+      - name: Check out Git repository
+        uses: actions/checkout@v3
+
+      - name: Cache modules
+        uses: actions/cache@v1
+        id: yarn-cache
+        with:
+          path: node_modules
+          key: ${{ runner.os }}-yarn-${{ hashFiles('**/yarn.lock') }}
+          restore-keys: ${{ runner.os }}-yarn-
+
+      - name: Configure AWS credentials
+        uses: aws-actions/configure-aws-credentials@v1
+        with:
+          aws-access-key-id: ${{ secrets.AWS_ACCESS_KEY_ID }}
+          aws-secret-access-key: ${{ secrets.AWS_SECRET_ACCESS_KEY }}
+          aws-region: ${{ secrets.AWS_REGION }}
+
+      - name: Setup Node.js
+        uses: actions/setup-node@v3
+        with:
+          node-version: 16.18.0
 
       - name: Install dependencies
         run: yarn
+
+      - name: Run lint
+        run: yarn lint
+
+      - name: Run Fix
+        run: yarn format:fix
 
       - name: Build
         run: yarn build
 
       - name: Deploy
-        uses: reggionick/s3-deploy@v3
-        with:
-          folder: build
-          bucket: ${{ secrets.AWS_S3_BUCKET }}
-          bucket-region: ${{ secrets.AWS_REGION }}
-          invalidation: /
-          delete-removed: true
-          no-cache: true
-          private: true
-          filesToInclude: '.*/*,*/*,**'
+        run: aws s3 sync ./dist/ci-cd-angular-app/ s3://${{ secrets.AWS_S3_BUCKET }}
