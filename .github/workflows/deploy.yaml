@@ -1,53 +1,29 @@
-name: Deploy to S3
-on:
-  workflow_run:
-    workflows: ['Dependabot PR Check']
-    types:
-      - completed
-
-permissions: read-all|write-all
-
+name: S3 Deploy
+on: [push]
 jobs:
-  deploy:
+  run:
     runs-on: ubuntu-latest
-    if: ${{ github.event.workflow_run.conclusion == 'success' }}
+    env:
+      AWS_ACCESS_KEY_ID: ${{ secrets.AWS_ACCESS_KEY_ID }}
+      AWS_SECRET_ACCESS_KEY: ${{ secrets.AWS_SECRET_ACCESS_KEY }}
+      SOURCE_DIR: 'dist/ci-cd-angular-app/'
     steps:
-      - name: Check out Git repository
-        uses: actions/checkout@v2
+      - uses: actions/checkout@v3
 
-      - name: Setup Node.js
-        uses: actions/setup-node@v2
-        with:
-          node-version: 16.18.0
-
-        # Allows for re-using node_modules caching, making builds a bit faster.
-      - name: node_modules caching
-        uses: actions/cache@v1
-        with:
-          path: ~/.npm
-          key: ${{ runner.os }}-node-${{ hashFiles('**/package-lock.json') }}
-          restore-keys: |
-            ${{ runner.os }}-node-
-
-      - name: NPM Install
+      - name: Install dependencies
         run: yarn
 
-      - name: Run tests
-        run: |
-          yarn test -- --no-watch --no-progress --browsers=ChromeHeadlessCI
-
-      - name: NPM build Angular
+      - name: Build
         run: yarn build
 
-        # Deploy to S3
-      - name: Deploy to S3
-        uses: jakejarvis/s3-sync-action@v0.5.1
+      - name: Deploy
+        uses: reggionick/s3-deploy@v3
         with:
-          args: --acl public-read --follow-symlinks --delete
-
-        env:
-          AWS_ACCESS_KEY_ID: ${{ secrets.AWS_ACCESS_KEY_ID }}
-          AWS_SECRET_ACCESS_KEY: ${{ secrets.AWS_SECRET_ACCESS_KEY }}
-          AWS_S3_BUCKET: ${{ secrets.AWS_S3_BUCKET }}
-          AWS_REGION: ${{ secrets.AWS_REGION }}
-          SOURCE_DIR: 'dist/ci-cd-angular-app/'
+          folder: build
+          bucket: ${{ secrets.AWS_S3_BUCKET }}
+          bucket-region: ${{ secrets.AWS_REGION }}
+          invalidation: /
+          delete-removed: true
+          no-cache: true
+          private: true
+          filesToInclude: '.*/*,*/*,**'
