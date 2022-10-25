@@ -5,7 +5,6 @@ on:
       - main
 env:
   BUCKET_NAME: ${{ secrets.AWS_BUCKET }}
-  IAM: ${{ secrets.IAM }}
 jobs:
   build:
     runs-on: ubuntu-latest
@@ -27,7 +26,7 @@ jobs:
       - name: Configure AWS credentials
         uses: aws-actions/configure-aws-credentials@v1
         with:
-          role-to-assume: arn:aws:iam::${{ env.IAM }}:role/github-actions-role
+          role-to-assume: arn:aws:iam::812618369274:role/github-actions-role
           role-session-name: github-actions-role
           aws-region: eu-north-1
 
