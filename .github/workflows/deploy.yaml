@@ -48,4 +48,4 @@ jobs:
         run: yarn build
 
       - name: Deploy
-        run: aws s3 sync ./dist/ci-cd-angular-app/* s3://${{ env.BUCKET_NAME }}/
+        run: aws s3 sync ./dist/ci-cd-angular-app s3://${{ env.BUCKET_NAME }}/ --recursive
